@@ -39,23 +39,43 @@ def mut_in_col(pileupcolumn, mut):
     return muts, not_muts
 
 
-def print_mut_results(mut_results):
-    for name in mut_results:
-        muts, not_muts = mut_results[name]
-        new_base = name[-1]
-        total = muts + not_muts
-        if total == 0:
-            continue
-        else:
-            print('{} ({}):'.format(name, nt(name)))
-            print('{} are {}, {} are wildtype ({:.2f}% of {} total)'.format(
-                muts,
-                new_base,
-                not_muts,
-                muts/total*100,
-                total
-            ))
+# def print_mut_results(mut_results):
+#     for name in mut_results:
+#         muts, not_muts = mut_results[name]
+#         new_base = name[-1]
+#         total = muts + not_muts
+#         if total == 0:
+#             continue
+#         else:
+#             print('{} ({}):'.format(name, nt(name)))
+#             print('{} are {}, {} are wildtype ({:.2f}% of {} total)'.format(
+#                 muts,
+#                 new_base,
+#                 not_muts,
+#                 muts/total*100,
+#                 total
+#             ))
 
+
+def print_mut_results(mut_results, out_file):
+    with open(out_file, "w") as ofile:
+        for name in mut_results:
+            muts, not_muts = mut_results[name]
+            new_base = name[-1]
+            total = muts + not_muts
+            if total == 0:
+                continue
+            else:
+                # print('{} ({}):'.format(name, nt(name)))
+                print('{} ({}): {} are {}, {} are wildtype ({:.2f}% of {} total)'.format(
+                    name,
+                    nt(name),
+                    muts,
+                    new_base,
+                    not_muts,
+                    muts/total*100,
+                    total
+                ), file=ofile)
 
 def plot_lineages(sample_results, sample_names):
     import numpy as np
@@ -67,6 +87,7 @@ def plot_lineages(sample_results, sample_names):
             names.add(key)
     names = [n for n in names]
     names.sort()
+    # names.sort(key = lambda x: int(x.split("_")[-1]))
     # names = sample_results[0].keys()
     lin_fractions = np.array([[lin_results[lin] if lin in lin_results else 0 for lin in names] for lin_results in sample_results]).T
     # fig, ax = plt.subplots(figsize=(len(sample_names)/2,len(names)/2))
@@ -89,7 +110,9 @@ def plot_lineages(sample_results, sample_names):
     # mng = plt.get_current_fig_manager()
     # mng.frame.Maximize(True)
     plt.tight_layout()
-    plt.show()
+    # plt.show()
+    # plt.savefig('out.png', dpi=300)
+    plt.savefig('alcov/lineages.png', dpi=300)
 
 
 def plot_lineages_timeseries(sample_results, sample_names):
@@ -156,7 +179,8 @@ def plot_lineages_timeseries(sample_results, sample_names):
     leg = fig.legend(labels=names, loc="lower right", ncol=3)
     for line in leg.get_lines():
         line.set_linewidth(6)
-    plt.show()
+    # plt.show()
+    plt.savefig('alcov/lineages_timeseries.png', dpi=300)
 
 
 def show_lineage_predictions(sample_results, X, Y, covered_muts):
@@ -183,7 +207,8 @@ def show_lineage_predictions(sample_results, X, Y, covered_muts):
     df = pd.DataFrame(data=d, index=idx)
     df = df.loc[:, df.any()] # Delete all-zero lineages
     df.plot.bar(stacked=True, rot=0)
-    plt.show()
+    # plt.show()
+    plt.savefig('alcov/lineage_predictions.png', dpi=300)
 
 
 def do_regression(lmps, Y):
@@ -280,7 +305,7 @@ def find_mutants_in_bam(bam_path, return_data=False):
             merged_lins.append(lin)
     X, reg = do_regression(merged_lmps, Y)
 
-    print_mut_results(mut_results)
+    print_mut_results(mut_results, bam_path+".results.txt")
     sample_results = {merged_lins[i]: round(reg.coef_[i], 2) for i in range(len(merged_lins))}
 
     if return_data:

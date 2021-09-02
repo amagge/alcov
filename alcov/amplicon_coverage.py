@@ -24,7 +24,8 @@ def plot_depths(sample_results, sample_names):
     g = sns.FacetGrid(df, row="Sample", hue="Pool", height=1.7, aspect=8)
     g.map(sns.barplot, "Amplicon number", "Log depth", order=[str(i) for i in range(1,99)], hue_order=['Pool 1', 'Pool 2'])
     plt.locator_params(axis='x', nbins=20)
-    plt.show()
+    # plt.show()
+    plt.savefig('alcov/depths.png', dpi=300)
 
 
 def plot_depths_gc(sample_results, sample_names):
@@ -52,7 +53,8 @@ def plot_depths_gc(sample_results, sample_names):
     g = sns.FacetGrid(df, col="Sample")
     g.map(sns.regplot, "GC content", "Log depth")
     # g.map(sns.regplot, "Amplicon number", "Log depth")
-    plt.show()
+    # plt.show()
+    plt.savefig('alcov/depths_gc.png', dpi=300)
 
 
 def plot_amplified_fraction(sample_results, sample_names):
@@ -72,7 +74,8 @@ def plot_amplified_fraction(sample_results, sample_names):
     g = sns.FacetGrid(df, row="Sample")
     g.map(sns.barplot, "Amplicon", "Depth")
     plt.locator_params(axis='x', nbins=20)
-    plt.show()
+    # plt.show()
+    plt.savefig('alcov/amplified_fraction.png', dpi=300)
 
 
 def find_depths_in_bam(bam_path, max_depth=50000):

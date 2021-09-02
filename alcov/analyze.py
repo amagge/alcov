@@ -96,7 +96,8 @@ def plot_mutations(sample_results, sample_names):
     )
     plt.xlabel('Sample')
     plt.ylabel('Mutation')
-    plt.show()
+    # plt.show()
+    plt.savefig('alcov/mutations.png', dpi=300)
 
 
 def find_mutants_in_bam(bam_path, mutations):
