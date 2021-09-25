@@ -279,7 +279,10 @@ def find_mutants_in_bam(bam_path, return_data=False):
             covered_muts.append(most_common_snp)
     if len(covered_muts) == 0:
         print('No coverage')
-        return None
+        if return_data:
+            return None, None, None, None
+        else:
+            return None
     covered_lineages = set()
     for m in covered_muts:
         aa_m = nt(m)
@@ -305,7 +308,7 @@ def find_mutants_in_bam(bam_path, return_data=False):
             merged_lins.append(lin)
     X, reg = do_regression(merged_lmps, Y)
 
-    print_mut_results(mut_results, bam_path+".results.txt")
+    print_mut_results(mut_results, "alcov/"+bam_path+".mutations.txt")
     sample_results = {merged_lins[i]: round(reg.coef_[i], 2) for i in range(len(merged_lins))}
 
     if return_data:
@@ -325,9 +328,10 @@ def find_lineages(file_path, ts=False, csv=False):
 
     if file_path.endswith('.bam'):
         sr, X, Y, covered_muts = find_mutants_in_bam(file_path, return_data=True)
-        show_lineage_predictions(sr, X, Y, covered_muts)
-        sample_results.append(sr)
-        sample_names.append('')
+        if sr and X and Y and covered_muts:
+            show_lineage_predictions(sr, X, Y, covered_muts)
+            sample_results.append(sr)
+            sample_names.append('')
     else:
         with open(file_path, 'r') as f:
             samples = [line.split('\t') for line in f.read().split('\n')]
