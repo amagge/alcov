@@ -332,6 +332,8 @@ def find_lineages(file_path, ts=False, csv=False):
             show_lineage_predictions(sr, X, Y, covered_muts)
             sample_results.append(sr)
             sample_names.append('')
+        else:
+            return
     else:
         with open(file_path, 'r') as f:
             samples = [line.split('\t') for line in f.read().split('\n')]
@@ -343,7 +345,8 @@ def find_lineages(file_path, ts=False, csv=False):
                     sample_results.append(sample_result)
                     sample_names.append(sample[1])
                 print()
-    if ts:
-        plot_lineages_timeseries(sample_results, sample_names)
-    else:
-        plot_lineages(sample_results, sample_names)
+    if sample_results:
+        if ts:
+            plot_lineages_timeseries(sample_results, sample_names)
+        else:
+            plot_lineages(sample_results, sample_names)
