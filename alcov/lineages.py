@@ -328,7 +328,7 @@ def find_lineages(file_path, ts=False, csv=False):
 
     if file_path.endswith('.bam'):
         sr, X, Y, covered_muts = find_mutants_in_bam(file_path, return_data=True)
-        if sr and X and Y and covered_muts:
+        if sr is not None and X is not None and Y is not None and covered_muts is not None:
             show_lineage_predictions(sr, X, Y, covered_muts)
             sample_results.append(sr)
             sample_names.append('')
