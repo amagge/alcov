@@ -2,7 +2,7 @@ from math import ceil, floor
 
 from .convert_mutations import aa, nt
 from .mutations import mutations as mut_lins
-
+import os
 
 def parse_mutations(mutations):
     nts = [mut for mut in mutations if ':' not in mut]
@@ -111,7 +111,6 @@ def plot_lineages(sample_results, sample_names):
     # mng.frame.Maximize(True)
     plt.tight_layout()
     # plt.show()
-    # plt.savefig('out.png', dpi=300)
     plt.savefig('alcov/lineages.png', dpi=300)
 
 
@@ -308,7 +307,7 @@ def find_mutants_in_bam(bam_path, return_data=False):
             merged_lins.append(lin)
     X, reg = do_regression(merged_lmps, Y)
 
-    print_mut_results(mut_results, "alcov/"+bam_path+".mutations.txt")
+    print_mut_results(mut_results, "alcov/"+bam_path.split("/")[0]+".mutations.txt")
     sample_results = {merged_lins[i]: round(reg.coef_[i], 2) for i in range(len(merged_lins))}
 
     if return_data:
@@ -338,7 +337,7 @@ def find_lineages(file_path, ts=False, csv=False):
         with open(file_path, 'r') as f:
             samples = [line.split('\t') for line in f.read().split('\n')]
         for sample in samples:
-            if sample[0].endswith('.bam'): # Mostly for filtering empty
+            if sample[0].endswith('.bam') and os.path.exists(sample[0]): # Mostly for filtering empty
                 print('{}:'.format(sample[1]))
                 sample_result = find_mutants_in_bam(sample[0])
                 if sample_result is not None:

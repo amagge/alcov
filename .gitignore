@@ -1,4 +1,6 @@
 build
 dist
+trash
 *.egg-info
+.DS_Store
 settings.json
